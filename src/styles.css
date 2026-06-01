@@ -62,8 +62,35 @@ button {
   background: rgba(11, 14, 10, 0.72);
   color: #7cff36;
   font-family: "Courier New", monospace;
-  font-size: 1.8rem;
+  font-size: 1.2rem;
   text-shadow: 0 0 8px rgba(112, 255, 50, 0.55);
+}
+
+.audio-hint {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9;
+  min-height: 28px;
+  padding: 5px 10px;
+  border: 1px solid rgba(112, 255, 50, 0.4);
+  background: rgba(6, 10, 7, 0.72);
+  color: #91ff59;
+  font-family: "Courier New", monospace;
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(145, 255, 89, 0.38);
+  box-shadow: 0 0 12px rgba(145, 255, 89, 0.12);
+  cursor: pointer;
+  animation: statusBlink 1.3s steps(2, end) infinite;
+}
+
+.audio-hint:hover,
+.audio-hint:focus-visible {
+  outline: none;
+  background: rgba(10, 16, 10, 0.88);
+  box-shadow: 0 0 16px rgba(145, 255, 89, 0.18);
 }
 
 .status-dot {
