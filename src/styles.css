@@ -392,6 +392,57 @@ button {
   line-height: 1.45;
 }
 
+.retro-window--maximized {
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-width: 100%;
+  height: calc(100% - 40px);
+  max-height: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+}
+
+.retro-window--maximized .retro-window__titlebar {
+  cursor: default;
+}
+
+/* When the window has an explicit size (maximized or user-resized),
+   let the body fill the remaining height and scroll inside it. */
+.retro-window--maximized,
+.retro-window--sized {
+  max-width: 100%;
+}
+
+.retro-window--sized {
+  display: flex;
+  flex-direction: column;
+}
+
+.retro-window--maximized .retro-window__body,
+.retro-window--sized .retro-window__body {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+
+.retro-window__resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  touch-action: none;
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0 3px,
+    #5e5b51 3px 4px,
+    transparent 4px 6px,
+    #ffffff 6px 7px
+  );
+}
+
 .window-copy h2 {
   margin: 0 0 10px;
   font-size: 1.25rem;

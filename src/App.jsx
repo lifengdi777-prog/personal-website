@@ -5,6 +5,8 @@ import RetroDesktop from './components/RetroDesktop.jsx';
 const BOOT_TIME = 2600;
 const AUDIO_FADE_OUT_MS = 2000;
 const INTRO_BGM_SRC = '/bgm/intro-bgm-20m-64k.mp3';
+const STARTUP_SFX_SRC = '/sfx/windows-xp-startup.mp3';
+const SHUTDOWN_SFX_SRC = '/sfx/windows-xp-shutdown.mp3';
 
 function BootOverlay({ active }) {
   return (
@@ -25,6 +27,8 @@ export default function App() {
   const [audioReady, setAudioReady] = useState(false);
   const [audioManuallyPaused, setAudioManuallyPaused] = useState(false);
   const introAudioRef = useRef(null);
+  const startupSfxRef = useRef(null);
+  const shutdownSfxRef = useRef(null);
   const audioFadeFrameRef = useRef(null);
 
   const clearAudioFade = () => {
@@ -157,19 +161,47 @@ export default function App() {
     await playIntroAudio(introAudioRef.current?.currentTime === 0);
   };
 
+  const playStartupSfx = () => {
+    const sfx = startupSfxRef.current;
+    // Skip the chime if the visitor has muted audio.
+    if (!sfx || audioManuallyPaused) return;
+
+    sfx.currentTime = 0;
+    sfx.volume = 1;
+    void sfx.play().catch(() => {});
+  };
+
   const enterDesktop = () => {
     if (phase === 'intro') {
+      // Fire within the click gesture so the boot chime isn't blocked by autoplay policy.
+      playStartupSfx();
       setPhase('booting');
     }
   };
 
   const exitDesktop = () => {
-    setPhase('intro');
+    const sfx = shutdownSfxRef.current;
+
+    // Muted or no clip available: shut down immediately.
+    if (!sfx || audioManuallyPaused) {
+      setPhase('intro');
+      return;
+    }
+
+    sfx.currentTime = 0;
+    sfx.volume = 1;
+    void sfx.play().catch(() => {});
+
+    // Let the chime play out before returning to the boot screen (capped at 5s).
+    const clipMs = Number.isFinite(sfx.duration) && sfx.duration > 0 ? sfx.duration * 1000 : 2500;
+    window.setTimeout(() => setPhase('intro'), Math.min(clipMs, 5000));
   };
 
   return (
     <main className={`app-shell app-shell--${phase}`}>
       <audio ref={introAudioRef} src={INTRO_BGM_SRC} loop preload="auto" />
+      <audio ref={startupSfxRef} src={STARTUP_SFX_SRC} preload="auto" />
+      <audio ref={shutdownSfxRef} src={SHUTDOWN_SFX_SRC} preload="auto" />
 
       <section className="intro-layer" aria-hidden={phase === 'desktop'}>
         <IntroScene3D phase={phase} onScreenClick={enterDesktop} />
